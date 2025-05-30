@@ -8,7 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IFilmesRepository extends JpaRepository<FilmesModel, UUID> {
-    Optional<FilmesModel> findByTitulo(String titulo);
-
+    
     List<FilmesModel> findByUsuario(UserModel usuario);
+
+    Optional<FilmesModel> findByTituloAndUsuario(String titulo, UserModel usuario);
 }

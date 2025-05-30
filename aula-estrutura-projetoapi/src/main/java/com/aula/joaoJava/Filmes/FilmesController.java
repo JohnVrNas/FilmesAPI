@@ -23,7 +23,7 @@ public class FilmesController {
     @Autowired
     private IUserRepository userRepository;
 
-    // Criar filme
+    // ✅ Criar filme
     @PostMapping("/criarfilme")
     private ResponseEntity<?> criarfilme(@RequestBody FilmesModel filmesModel, HttpServletRequest request) {
         String username = AuthUtil.extractUsername(request);
@@ -39,10 +39,11 @@ public class FilmesController {
 
         filmesModel.setUsuario(userOpt.get());
 
-        Optional<FilmesModel> filmeExis = filmesRepository.findByTitulo(filmesModel.getTitulo());
+        // ✅ Checa se esse usuário já tem esse filme
+        Optional<FilmesModel> filmeExis = filmesRepository.findByTituloAndUsuario(filmesModel.getTitulo(), userOpt.get());
 
         if (filmeExis.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Filme já existe na lista!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Filme já existe na sua lista!");
         }
 
         FilmesModel criado = filmesRepository.save(filmesModel);
@@ -50,7 +51,7 @@ public class FilmesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
-    // Listar filmes do usuário autenticado
+    // ✅ Listar filmes do usuário autenticado
     @GetMapping("/listafilme")
     public ResponseEntity<?> listarFilmes(HttpServletRequest request) {
         String username = AuthUtil.extractUsername(request);
@@ -69,13 +70,13 @@ public class FilmesController {
         return ResponseEntity.ok(filmes);
     }
 
-    // Deletar filme
+    // ✅ Deletar filme
     @DeleteMapping("/deletarfilme/{id}")
     public void deleteFilme(@PathVariable UUID id) {
         filmesRepository.deleteById(id);
     }
 
-    // Atualizar Filme
+    // ✅ Atualizar Filme
     @PutMapping("/atualizarfilme/{id}")
     public ResponseEntity<?> atualizaFilme(@PathVariable UUID id, @RequestBody FilmesModel filmeModel) {
         return filmesRepository.findById(id).map(filmeExistente -> {
@@ -83,7 +84,7 @@ public class FilmesController {
             if (filmeModel.getTitulo() != null) {
                 filmeExistente.setTitulo(filmeModel.getTitulo());
             }
-            if (filmeModel.getData()= null) {
+            if (filmeModel.getData() != null) {
                 filmeExistente.setData(filmeModel.getData());
             }
             if (filmeModel.getComentarios() != null) {
